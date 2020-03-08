@@ -1,6 +1,9 @@
-class LogicBoard:
-    def __init__(self, state):
-        self.state = state
+import copy
+
+
+class LogicBoard(object):
+    def __init__(self, state=None):
+        self.state = copy.copy(state)
         self.possible_moves = []
         self._draw_move_counter = -1
         self.number_of_pieces = len([a for a in self.state if a not in [0, "0", None]])
@@ -10,7 +13,7 @@ class LogicBoard:
 
     def play_move(self, from_field, to_field):
         if self.state[from_field] in [0, "0", None] or self.state[to_field] not in [0, "0", None]:
-            # Error
+            print("illegal move played")
             return
 
         self.state[to_field] = self.state[from_field]
