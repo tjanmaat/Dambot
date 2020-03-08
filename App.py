@@ -1,10 +1,10 @@
-import StartPositions
-from classes.game.Game import Game
+from dambot.data import StartPositions
+from dambot.classes.game.Game import Game
 import time
 
 start = time.time()
 
-for i in range(500):
+for i in range(1):
 
     game = Game()
 
