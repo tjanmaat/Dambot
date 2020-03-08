@@ -1,6 +1,8 @@
 from dambot.classes.gui.GUIController import GUIController
 from tkinter import *
 from dambot.classes.board.BoardController import BoardController
+from dambot.classes.bots.DraftBot import DraftBot
+from dambot.classes.bots.Player import Player
 from dambot.classes.bots.RandomBot import RandomBot
 
 
@@ -8,8 +10,8 @@ class Game:
     def __init__(self):
         self.board = BoardController(self)
         self.player_turn = None  # True for white's move
-        self.white = RandomBot(True)
-        self.black = RandomBot(False)
+        self.white = Player(True)
+        self.black = DraftBot(False)
         self.tk = None
         self.gui = None
 
@@ -70,12 +72,15 @@ class Game:
 
         # Check win
         if self.board.is_player_defeated():
-            # print("Game was won")
+            if self.player_turn:
+                print("Black player won")
+            else:
+                print("White player won")
             if self.gui is not None:
                 self.gui.display_game_won(self.player_turn)
             return
         elif self.board.is_game_draw():
-            # print("Game was draw")
+            print("Game was draw")
             if self.gui is not None:
                 self.gui.display_game_draw()
             return
