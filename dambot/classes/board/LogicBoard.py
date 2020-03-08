@@ -9,6 +9,10 @@ class LogicBoard:
         self._past_state_hash_list = []
 
     def play_move(self, from_field, to_field):
+        if self.state[from_field] in [0, "0", None] or self.state[to_field] not in [0, "0", None]:
+            # Error
+            return
+
         self.state[to_field] = self.state[from_field]
         self.state[from_field] = 0
 
@@ -67,8 +71,8 @@ class LogicBoard:
                     possible_fields = [field_enumeration + 10, field_enumeration + 1]
 
                     for possible_field_enumeration in possible_fields:
-                        if (self.state[possible_field_enumeration] == "0" or self.state[possible_field_enumeration] == 0) \
-                                and possible_field_enumeration < 100:
+                        if possible_field_enumeration < 100 and \
+                                (self.state[possible_field_enumeration] == "0" or self.state[possible_field_enumeration] == 0):
                             move_list.append([[field_enumeration, possible_field_enumeration], []])
 
             # If king is of color whose turn it is
