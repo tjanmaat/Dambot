@@ -12,7 +12,8 @@ class LogicBoard(object):
         self._past_state_hash_list = []
 
     def play_move(self, from_field, to_field):
-        if self.state[from_field] in [0, "0", None] or self.state[to_field] not in [0, "0", None]:
+        # check if move goes from filled field to an empty field or back to the starting position
+        if self.state[from_field] in [0, "0", None] or (from_field != to_field and self.state[to_field] not in [0, "0", None]):
             print("illegal move played")
             return
 
