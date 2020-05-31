@@ -11,6 +11,13 @@ class LogicBoard(object):
         self._black_has_king = False
         self._past_state_hash_list = []
 
+    # Processes a move; moves piece, removes pieces, promotes piece and calculates new possible movew
+    def process_move(self, move, player_turn):
+        self.play_move(move[0][0], move[0][1])
+        self.remove_pieces(move[1])
+        self.promote_piece(move[0][1], player_turn)
+        self.update_possible_moves(not player_turn)
+
     def play_move(self, from_field, to_field):
         # check if move goes from filled field to an empty field or back to the starting position
         if self.state[from_field] in [0, "0", None] or (from_field != to_field and self.state[to_field] not in [0, "0", None]):
