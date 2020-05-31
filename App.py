@@ -9,7 +9,7 @@ for i in range(1):
     game = Game()
 
     piece_list = StartPositions.start_piece_list(game)
-    game.player_turn = True
+    game.start_player = True
     game.set_board(piece_list)
 
     game.run()

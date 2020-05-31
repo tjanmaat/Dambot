@@ -9,20 +9,17 @@ class BoardController:
         self.logic_board = None
         self.game = game
 
-    def set_board(self, piece_list, player_turn):
-        self.logic_board = LogicBoard(BoardController._piece_list_to_state(piece_list))
-        self.logic_board.update_possible_moves(player_turn)
+    def set_board(self, piece_list, start_player):
+        self.logic_board = LogicBoard(BoardController._piece_list_to_state(piece_list), start_player)
+        self.logic_board.update_possible_moves()
 
     def get_board(self):
         return self._state_to_piece_list(self.logic_board.state)
 
-    def play_move(self, to_field, player_turn):
+    def play_move(self, to_field):
         for possible_move in self.logic_board.possible_moves:
             if [self.piece_selected, to_field] == possible_move[0]:
-                self.logic_board.play_move(self.piece_selected, to_field)
-                self.logic_board.remove_pieces(possible_move[1])
-                self.logic_board.promote_piece(possible_move[0][1], player_turn)
-                self.logic_board.update_possible_moves(not player_turn)
+                self.logic_board.process_move(possible_move)
                 return True
         return False
 
@@ -68,14 +65,8 @@ class BoardController:
         return self.logic_board.state[notation_position] != "0" and self.logic_board.state[notation_position] != 0 \
                and self.logic_board.state[notation_position] is not None
 
-    def check_field_has_piece_of_player_turn(self, enumeration_position, player_turn):
-        if player_turn:
-            if str(self.logic_board.state[enumeration_position])[0] == "w":
-                return True
-        else:
-            if str(self.logic_board.state[enumeration_position])[0] == "b":
-                return True
-        return False
+    def check_field_has_piece_of_player_turn(self, enumeration_position):
+        return self.logic_board.check_field_has_piece_of_player_turn(enumeration_position)
 
     def is_player_defeated(self):
         return len(self.logic_board.possible_moves) == 0
@@ -90,4 +81,9 @@ class BoardController:
         for none_field in none_field_array:
             if self.logic_board.state[none_field] is not None:
                 return False
+
+        # Check if first player has been set
+        if self.logic_board.player_turn is None:
+            return False
+
         return True

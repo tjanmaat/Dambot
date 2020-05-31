@@ -9,7 +9,7 @@ from dambot.classes.bots.RandomBot import RandomBot
 class Game:
     def __init__(self):
         self.board = BoardController(self)
-        self.player_turn = None  # True for white's move
+        self.start_player = None  # True if white starts
         self.white = Player(True)
         self.black = DraftBot(False)
         self.tk = None
@@ -17,7 +17,7 @@ class Game:
 
     # Start game
     def run(self):
-        if not isinstance(self.player_turn, bool):
+        if not isinstance(self.start_player, bool):
             return
 
         if not self.board.check_valid_board():
@@ -39,7 +39,7 @@ class Game:
 
     # Set up board
     def set_board(self, piece_list):
-        self.board.set_board(piece_list, self.player_turn)
+        self.board.set_board(piece_list, self.start_player)
 
         # If a human player exists, create board gui
         if self.white.bot_name == "player" or self.black.bot_name == "player":
@@ -52,7 +52,7 @@ class Game:
         # If clicked field is occupied and of right color, select piece
         # If field is empty and a piece was selected already, play move
         if self.board.is_field_occupied(enumeration_position) and \
-                self.board.check_field_has_piece_of_player_turn(enumeration_position, self.player_turn):
+                self.board.check_field_has_piece_of_player_turn(enumeration_position):
             self.board.piece_selected = enumeration_position
             # self.gui.highlight_piece()
         elif self.board.piece_selected is not None and isinstance(self.board.piece_selected, int) and not \
@@ -61,23 +61,23 @@ class Game:
 
     # execute a move
     def execute_move(self, enumeration_position):
-        is_move_played = self.board.play_move(enumeration_position, self.player_turn)
+        is_move_played = self.board.play_move(enumeration_position)
         if is_move_played:
             self.board.piece_selected = None
-            self.player_turn = not self.player_turn
 
+        player_turn = self.board.logic_board.player_turn
         # If there is a board to redraw, do so
         if self.gui is not None:
-            self.gui.redraw_pieces_from_enumeration(self.board.get_board(), self.player_turn)
+            self.gui.redraw_pieces_from_enumeration(self.board.get_board(), player_turn)
 
         # Check win
         if self.board.is_player_defeated():
-            if self.player_turn:
+            if player_turn:
                 print("Black player won")
             else:
                 print("White player won")
             if self.gui is not None:
-                self.gui.display_game_won(self.player_turn)
+                self.gui.display_game_won(player_turn)
             return
         elif self.board.is_game_draw():
             print("Game was draw")
@@ -91,9 +91,9 @@ class Game:
     # get the next move
     def next_move(self):
         move = []
-        if self.player_turn:
+        if self.board.logic_board.player_turn:
             move = self.white.choose_move(self.board.logic_board)
-        elif not self.player_turn:
+        elif not self.board.logic_board.player_turn:
             move = self.black.choose_move(self.board.logic_board)
 
         # If player is human, move is an empty array; no move is executed

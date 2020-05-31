@@ -2,7 +2,7 @@ import copy
 
 
 class LogicBoard(object):
-    def __init__(self, state=None):
+    def __init__(self, state=None, player_turn=None):
         self.state = copy.copy(state)
         self.possible_moves = []
         self._draw_move_counter = -1
@@ -10,13 +10,15 @@ class LogicBoard(object):
         self._white_has_king = False
         self._black_has_king = False
         self._past_state_hash_list = []
+        self.player_turn = player_turn
 
     # Processes a move; moves piece, removes pieces, promotes piece and calculates new possible movew
-    def process_move(self, move, player_turn):
+    def process_move(self, move):
         self.play_move(move[0][0], move[0][1])
         self.remove_pieces(move[1])
-        self.promote_piece(move[0][1], player_turn)
-        self.update_possible_moves(not player_turn)
+        self.promote_piece(move[0][1])
+        self.player_turn = not self.player_turn
+        self.update_possible_moves()
 
     def play_move(self, from_field, to_field):
         # check if move goes from filled field to an empty field or back to the starting position
@@ -36,7 +38,7 @@ class LogicBoard(object):
         if self._white_has_king and self._black_has_king:
             self._past_state_hash_list.append(hash(tuple(self.state)))
 
-    def update_possible_moves(self, player_turn):
+    def update_possible_moves(self):
         number_of_pieces_to_take = 0
         move_list = []
         for field_enumeration in range(len(self.state)):
@@ -46,13 +48,13 @@ class LogicBoard(object):
                 continue
 
             # If piece is not of color whose turn it is, continue
-            if (player_turn and (field == "bs" or field == "bk")) or (not player_turn and (field == "ws" or field == "wk")):
+            if (self.player_turn and (field == "bs" or field == "bk")) or (not self.player_turn and (field == "ws" or field == "wk")):
                 continue
 
             # If soldier is of color whose turn it is
-            if (player_turn and field == "ws") or (not player_turn and field == "bs"):
+            if (self.player_turn and field == "ws") or (not self.player_turn and field == "bs"):
                 take_move_list = [[field_enumeration, field_enumeration], []]
-                take_move_list = self.get_take_move_list(take_move_list, player_turn)
+                take_move_list = self.get_take_move_list(take_move_list)
                 # If this piece can take less pieces than a piece checked before
                 if len(take_move_list) > 0 and number_of_pieces_to_take > 0 and len(take_move_list[0][1]) < number_of_pieces_to_take:
                     continue
@@ -71,7 +73,7 @@ class LogicBoard(object):
                     continue
 
                 # Else return empty fields soldier can move to
-                if player_turn and field == "ws":
+                if self.player_turn and field == "ws":
                     possible_fields = [field_enumeration - 10, field_enumeration - 1]
 
                     for possible_field_enumeration in possible_fields:
@@ -87,9 +89,9 @@ class LogicBoard(object):
                             move_list.append([[field_enumeration, possible_field_enumeration], []])
 
             # If king is of color whose turn it is
-            if (player_turn and field == "wk") or (not player_turn and field == "bk"):
+            if (self.player_turn and field == "wk") or (not self.player_turn and field == "bk"):
                 take_move_list = [[field_enumeration, field_enumeration], []]
-                take_move_list = self.get_take_move_list(take_move_list, player_turn)
+                take_move_list = self.get_take_move_list(take_move_list)
                 # If this piece can take less pieces than a piece checked before
                 if len(take_move_list) > 0 and number_of_pieces_to_take > 0 and len(take_move_list[0][1]) < number_of_pieces_to_take:
                     continue
@@ -124,7 +126,7 @@ class LogicBoard(object):
     # for every possible field where it can land, call itself
     # keep track of max length of taken_pieces_array, only return options equalling this length
     # return array of arrays (array of start- and end field and pieces that have been taken)
-    def get_take_move_list(self, move, player_turn):
+    def get_take_move_list(self, move):
         return_move_list = [move]
         start_field_enumeration = move[0][0]
         field_enumeration = move[0][1]
@@ -132,7 +134,7 @@ class LogicBoard(object):
         direction_list = [-10, -1, 10, 1]
         piece_last_letter = self.state[start_field_enumeration][1]
 
-        if player_turn:
+        if self.player_turn:
             takeable_piece_start_letter = "b"
         else:
             takeable_piece_start_letter = "w"
@@ -155,7 +157,7 @@ class LogicBoard(object):
                         (self.state[landing_field_enumeration] == "0" or self.state[landing_field_enumeration] == 0 or landing_field_enumeration == start_field_enumeration):
                     temp_taken_pieces_array = taken_pieces_array + [possible_field_enumeration]
                     temp_move = [[start_field_enumeration, landing_field_enumeration], temp_taken_pieces_array]
-                    continue_taking_move_list = self.get_take_move_list(temp_move, player_turn)
+                    continue_taking_move_list = self.get_take_move_list(temp_move)
                     if len(continue_taking_move_list[0][1]) < len(return_move_list[0][1]):
                         # Breaks the while loop, such that it continues with the next element of the for loop.
                         # Only works because the for loop is empty after the while loop
@@ -182,7 +184,7 @@ class LogicBoard(object):
             self.check_start_draw_move_counter()
             self._past_state_hash_list = []
 
-    def promote_piece(self, piece_enumeration, player_turn):
+    def promote_piece(self, piece_enumeration):
         if piece_enumeration in [5, 14, 23, 32, 41] and self.state[piece_enumeration] == "ws":
             self.state[piece_enumeration] = "wk"
         elif piece_enumeration in [59, 68, 77, 86, 95] and self.state[piece_enumeration] == "bs":
@@ -190,7 +192,7 @@ class LogicBoard(object):
         else:
             return
 
-        if player_turn:
+        if self.player_turn:
             self._white_has_king = True
         else:
             self._black_has_king = True
@@ -237,3 +239,13 @@ class LogicBoard(object):
             self._draw_move_counter = 12
         elif white_kings_counter == 1 and black_kings_counter == 1:
             self._draw_move_counter = 1
+
+    # Check if field has piece of player at turn
+    def check_field_has_piece_of_player_turn(self, enumeration_position):
+        if self.player_turn:
+            if str(self.state[enumeration_position])[0] == "w":
+                return True
+        else:
+            if str(self.state[enumeration_position])[0] == "b":
+                return True
+        return False
