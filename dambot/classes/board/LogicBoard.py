@@ -14,13 +14,15 @@ class LogicBoard(object):
 
     # Processes a move; moves piece, removes pieces, promotes piece and calculates new possible movew
     def process_move(self, move):
-        self.play_move(move[0][0], move[0][1])
+        self._play_move(move[0][0], move[0][1])
         self.remove_pieces(move[1])
         self.promote_piece(move[0][1])
         self.player_turn = not self.player_turn
         self.update_possible_moves()
 
-    def play_move(self, from_field, to_field):
+    # Changes state of board
+    # Using process_move instead is recommended
+    def _play_move(self, from_field, to_field):
         # check if move goes from filled field to an empty field or back to the starting position
         if self.state[from_field] in [0, "0", None] or (from_field != to_field and self.state[to_field] not in [0, "0", None]):
             print("illegal move played")
