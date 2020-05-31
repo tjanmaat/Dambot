@@ -16,7 +16,7 @@ class BoardController:
     def get_board(self):
         return self._state_to_piece_list(self.logic_board.state)
 
-    def play_move(self, to_field):
+    def process_move(self, to_field):
         for possible_move in self.logic_board.possible_moves:
             if [self.piece_selected, to_field] == possible_move[0]:
                 self.logic_board.process_move(possible_move)

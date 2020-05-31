@@ -61,7 +61,7 @@ class Game:
 
     # execute a move
     def execute_move(self, enumeration_position):
-        is_move_played = self.board.play_move(enumeration_position)
+        is_move_played = self.board.process_move(enumeration_position)
         if is_move_played:
             self.board.piece_selected = None
 
