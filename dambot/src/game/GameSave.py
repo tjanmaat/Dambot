@@ -1,14 +1,17 @@
-from dambot.classes.gui.GUIController import GUIController
 from tkinter import *
-from dambot.classes.board.BoardController import BoardController
-from dambot.classes.bots.DraftBot import DraftBot
-from dambot.classes.bots.Player import Player
-from dambot.classes.bots.RandomBot import RandomBot
+
+from dambot.src.gui.GUIController import GUIController
+from dambot.src.game.GameAbstract import Game
+from dambot.src.bots.DraftBot import DraftBot
+from dambot.src.bots.Player import Player
+from dambot.src.bots.RandomBot import RandomBot
+from dambot.src.board.BoardController import BoardController
 
 
-class Game:
+class GameSave(Game):
     def __init__(self):
-        self.board = BoardController(self)
+        super().__init__()
+        self.board = BoardController(self, "save")
         self.start_player = None  # True if white starts
         self.white = Player(True)
         self.black = DraftBot(False)
@@ -29,13 +32,6 @@ class Game:
         # If there is a board, draw it
         if self.tk is not None:
             self.tk.mainloop()
-
-    # Start game without checks
-    # Works only for two non-human players with start_piece_list as start position, is slightly faster
-    def run_fast(self):
-        if self.white.bot_name != "player" and self.black.bot_name != "player":
-            self.next_move()
-        return
 
     # Set up board
     def set_board(self, piece_list):
@@ -58,6 +54,7 @@ class Game:
         elif self.board.piece_selected is not None and isinstance(self.board.piece_selected, int) and not \
                 self.board.is_field_occupied(enumeration_position):
             self.execute_move(enumeration_position)
+
 
     # execute a move
     def execute_move(self, enumeration_position):

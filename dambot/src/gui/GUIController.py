@@ -1,5 +1,5 @@
 import math
-from dambot.classes.gui.GUIView import GUIView
+from dambot.src.gui.GUIView import GUIView
 
 
 class GUIController:

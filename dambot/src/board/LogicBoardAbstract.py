@@ -1,7 +1,8 @@
 import copy
+from abc import ABC, abstractmethod
 
 
-class LogicBoard(object):
+class LogicBoard(ABC):
     def __init__(self, state=None, player_turn=None):
         self.state = copy.copy(state)
         self.possible_moves = []
@@ -20,25 +21,9 @@ class LogicBoard(object):
         self.player_turn = not self.player_turn
         self.update_possible_moves()
 
-    # Changes state of board
-    # Using process_move instead is recommended
+    @abstractmethod
     def _play_move(self, from_field, to_field):
-        # check if move goes from filled field to an empty field or back to the starting position
-        if self.state[from_field] in [0, "0", None] or (from_field != to_field and self.state[to_field] not in [0, "0", None]):
-            print("illegal move played")
-            return
-
-        self.state[to_field] = self.state[from_field]
-        self.state[from_field] = 0
-
-        if self._draw_move_counter > -1:
-            self._draw_move_counter = self._draw_move_counter - 1
-
-        if self.state[to_field] not in [0, "0", None] and str(self.state[to_field])[1] == "s":
-            self._past_state_hash_list = []
-
-        if self._white_has_king and self._black_has_king:
-            self._past_state_hash_list.append(hash(tuple(self.state)))
+        pass
 
     def update_possible_moves(self):
         number_of_pieces_to_take = 0

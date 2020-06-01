@@ -1,6 +1,6 @@
-from dambot.classes.gui.GUIController import GUIController
-from dambot.classes.pieces.Soldier import Soldier
-from dambot.classes.pieces.King import King
+from dambot.src.gui.GUIController import GUIController
+from dambot.src.pieces.Soldier import Soldier
+from dambot.src.pieces.King import King
 
 
 def test_piece_list_one(game):

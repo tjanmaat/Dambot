@@ -1,16 +1,24 @@
-from dambot.classes.board.LogicBoard import LogicBoard
-from dambot.classes.pieces.Soldier import Soldier
-from dambot.classes.pieces.King import King
+from dambot.src.board.LogicBoardFast import LogicBoardFast
+from dambot.src.board.LogicBoardSave import LogicBoardSave
+from dambot.src.pieces.Soldier import Soldier
+from dambot.src.pieces.King import King
 
 
 class BoardController:
-    def __init__(self, game):
+    def __init__(self, game, mode):
         self.piece_selected = None
         self.logic_board = None
         self.game = game
+        self.mode = mode
 
     def set_board(self, piece_list, start_player):
-        self.logic_board = LogicBoard(BoardController._piece_list_to_state(piece_list), start_player)
+        if self.mode == "save":
+            self.logic_board = LogicBoardSave(BoardController._piece_list_to_state(piece_list), start_player)
+        elif self.mode == "fast":
+            self.logic_board = LogicBoardFast(BoardController._piece_list_to_state(piece_list), start_player)
+        else:
+            print("unkown game mode:" + self.mode)
+            return
         self.logic_board.update_possible_moves()
 
     def get_board(self):

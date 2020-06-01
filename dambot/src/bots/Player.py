@@ -1,4 +1,4 @@
-from dambot.classes.bots.Bot import *
+from dambot.src.bots.Bot import *
 
 
 class Player(Bot):

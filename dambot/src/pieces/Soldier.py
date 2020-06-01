@@ -1,4 +1,4 @@
-from dambot.classes.pieces.Piece import *
+from dambot.src.pieces.Piece import *
 
 
 class Soldier(Piece):
